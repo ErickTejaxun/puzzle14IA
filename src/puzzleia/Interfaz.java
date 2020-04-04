@@ -94,7 +94,7 @@ public class Interfaz extends javax.swing.JFrame{
         botonEjecutar = new javax.swing.JButton();
         lblposicion = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        algoritmoSeleccionado = new javax.swing.JComboBox<>();
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panelReporte = new javax.swing.JPanel();
@@ -170,7 +170,7 @@ public class Interfaz extends javax.swing.JFrame{
 
         jLabel1.setText("Algoritmo");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Búsqueda en anchura.", "Búsqueda en profundidad.", "Búsqueda limitada en profundidad.", "Búsqueda por profundida iterativa.", "Búsqueda bidireccional.", "Generación y prueba", "Métodos de escalada ", "Búsqueda del primero mejor.", "Algoritmo A*" }));
+        algoritmoSeleccionado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Generación y prueba", "Métodos de escalada ", "Búsqueda del primero mejor.", "Algoritmo A*" }));
 
         javax.swing.GroupLayout panelEdicionLayout = new javax.swing.GroupLayout(panelEdicion);
         panelEdicion.setLayout(panelEdicionLayout);
@@ -183,7 +183,7 @@ public class Interfaz extends javax.swing.JFrame{
                     .addGroup(panelEdicionLayout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelEdicionLayout.createSequentialGroup()
                         .addComponent(botonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(642, 642, 642)
@@ -203,7 +203,7 @@ public class Interfaz extends javax.swing.JFrame{
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(contenedorPaneles, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
                 .addContainerGap())
@@ -859,7 +859,8 @@ public class Interfaz extends javax.swing.JFrame{
         {
             JPanel temporal = (JPanel) contenedorPaneles.getComponent(contenedorPaneles.getSelectedIndex());
             JScrollPane scroll = (JScrollPane)temporal.getComponent(0);
-            JTextArea editor =  (JTextArea)scroll.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);
+            JViewport view = scroll.getViewport();
+            JTextArea editor = (JTextArea) view.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);            
             texto = editor.getText();
             //System.out.println(textoBuscado);
             writer.print(texto);
@@ -890,7 +891,8 @@ public class Interfaz extends javax.swing.JFrame{
         {
             JPanel temporal = (JPanel) contenedorPaneles.getComponent(contenedorPaneles.getSelectedIndex());
             JScrollPane scroll = (JScrollPane)temporal.getComponent(0);
-            JTextArea editor = (JTextArea) scroll.getComponent(0);
+            JViewport view = scroll.getViewport();
+            JTextArea editor = (JTextArea) view.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);            
             texto = editor.getText();            
             writer.print(texto);
         } catch (FileNotFoundException ex) 
@@ -926,7 +928,8 @@ public class Interfaz extends javax.swing.JFrame{
         {
             JPanel temporal = (JPanel) contenedorPaneles.getComponent(contenedorPaneles.getSelectedIndex());
             JScrollPane scroll = (JScrollPane)temporal.getComponent(0);
-            JTextArea editor =  (JTextArea)scroll.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);
+            JViewport view = scroll.getViewport();
+            JTextArea editor = (JTextArea) view.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);            
             texto = editor.getText();
             //System.out.println(textoBuscado);
             writer.print(texto);
@@ -948,7 +951,8 @@ public class Interfaz extends javax.swing.JFrame{
         {
             JPanel temporal = (JPanel) contenedorPaneles.getComponent(contenedorPaneles.getSelectedIndex());
             JScrollPane scroll = (JScrollPane)temporal.getComponent(0);
-            JTextArea editor = (JTextArea) scroll.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);
+            JViewport view = scroll.getViewport();
+            JTextArea editor = (JTextArea) view.getComponent(0);//(RSyntaxTextArea)scroll.getComponent(0);
             texto = editor.getText();
             //System.out.println(textoBuscado);
             writer.print(texto);
@@ -1049,23 +1053,27 @@ public class Interfaz extends javax.swing.JFrame{
  
     
       
+    /*
     
+    Este método lanza la ejecución del algoritmo seleccionado aplicando al fichero seleccionado.
+    */
     
     public void buscarSolucion() 
     {
+        int algoritmoSelected = this.algoritmoSeleccionado.getSelectedIndex(); /*{Generación y prueba, Métodos de escalada, Búsqueda del primero mejor,Algoritmo A*}*/  
         /*Limpiar consola de salida*/
         textAreaConsola.setText("");
 	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	Date date = new Date();        
-        fechaHora = dateFormat.format(date);
-              
-        /*Guardar-------*/
+        fechaHora = dateFormat.format(date);              
+        /*Guardar cambios en el fichero.*/
         if(contenedorPaneles.getTabRunCount()==0)
         {
             JOptionPane.showMessageDialog(this, "Debe abrir un archivo.");
             return;
         }
-        String actual = contenedorPaneles.getTitleAt(contenedorPaneles.getSelectedIndex());                
+        String actual = contenedorPaneles.getTitleAt(contenedorPaneles.getSelectedIndex()); 
+        /*Verificamos si el archivo ya existe o no.*/
         if(actual.contains("."))
         {
             guardarArchivoSinGrafo(true);
@@ -1077,18 +1085,46 @@ public class Interfaz extends javax.swing.JFrame{
         /*Fin Guardar*------------*/
         
         String nombreArchivo = contenedorPaneles.getTitleAt(contenedorPaneles.getSelectedIndex());
-        String pathArchivo = direcciones.get(nombreArchivo);
-        
+        String pathArchivo = direcciones.get(nombreArchivo);                        
+        /*
+        Aquí comienza la ejecución de la soulución.
+        */               
         try 
         {
-            int matriz[][];
-            matriz = obtenerMatriz(pathArchivo);
-        } catch (FileNotFoundException ex) {
+            int matriz[][]; // Matriz inicial
+            matriz = obtenerMatriz(pathArchivo); // Llenamos la matriz desde el fichero.
+            Tablero tab = new Tablero(matriz); // Creamos el tablero inicial
+            switch(algoritmoSelected)
+            {
+                case 0:/*Generacion y prueba*/
+                    GeneracionYPrueba algoritmo =  new GeneracionYPrueba(tab);
+                    imprimirConsola(tab.getDataCadena());                    
+                    break;
+                case 1:/*Método de escalada*/
+                    break;
+                case 2:/*Búsqueda del primero mejor*/
+                    break;
+                case 3:/*Algoritmo A* */
+                    break;
+            }
+            
+        } catch (FileNotFoundException ex) 
+        {
             Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-
+            this.imprimirConsola("Error, el archivo no ha sido encontrado. "+ ex.getMessage());
+        }       
     }
+    
+    public boolean esCuadrada(int mat[][])
+    {
+        for (int[] mat1 : mat) {
+            if (mat1.length != mat.length) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     
     public void abrirAST()
     {
@@ -1105,17 +1141,8 @@ public class Interfaz extends javax.swing.JFrame{
     {        
         this.textAreaConsola.setText(textAreaConsola.getText() + "\n" + m);
     } 
-    
-
-    
-    // @param entero modo : 1= remplazar todo, 0= remplazar siguiente
-    
-    
-
-    
-    
-    
-    
+       
+    // @param entero modo : 1= remplazar todo, 0= remplazar siguiente                       
     public void Imprimir(Object cadena)
     {
         System.out.println(cadena);
@@ -1323,7 +1350,7 @@ public class Interfaz extends javax.swing.JFrame{
         }        
    }
    
-    public static int[][] obtenerMatriz(String path) throws FileNotFoundException
+    public int[][] obtenerMatriz(String path) throws FileNotFoundException
     {   
         int data[][] = null ;
         File archivo= new File(path);    
@@ -1335,7 +1362,7 @@ public class Interfaz extends javax.swing.JFrame{
             lineas.add(sc.nextLine());            
         }                
         /*Verificamos que la matriz sea cuadrada*/        
-        
+        int numeroColumnas, numeroFilas = lineas.size();
         /*reservamos espacio para la nueva matriz*/
         data = new int[lineas.size()][lineas.size()];
         /*Obtenemos los datos de cada fila que está en la columna*/
@@ -1345,11 +1372,19 @@ public class Interfaz extends javax.swing.JFrame{
         {
             String lineaActual = lineas.get(i);            
             y =0 ; 
-           celdas =  new StringTokenizer (lineaActual,",");
+            celdas =  new StringTokenizer (lineaActual,",");
             while(celdas.hasMoreTokens())
-            {
-               data[i][y] = Integer.parseInt(celdas.nextToken());                
-               y++;
+            {               
+               if(y<numeroFilas)
+               {
+                   data[i][y] = Integer.parseInt(celdas.nextToken());
+                   y++;
+               }       
+               else
+               {                  
+                  this.imprimirConsola("Error---> La matriz no es cuadrada");
+                  break;
+               }
             }            
         }
         return data;
@@ -1358,11 +1393,11 @@ public class Interfaz extends javax.swing.JFrame{
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem abrirCarpeta;
+    private javax.swing.JComboBox<String> algoritmoSeleccionado;
     private javax.swing.JTree arbolDirectorio;
     private javax.swing.JButton botonEjecutar;
     private javax.swing.JTabbedPane contenedorPaneles;
     private javax.swing.JMenuItem guardarComo;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;

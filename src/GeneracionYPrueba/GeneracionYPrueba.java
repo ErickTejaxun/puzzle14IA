@@ -22,7 +22,7 @@ public class GeneracionYPrueba
     
     public void Run()
     {
-        String data = tableroInicial.getDataCadena();
+        String data = tableroInicial.getDataCadena(); 
         System.out.println(data);
         System.out.println(tableroInicial.getPuntuation());        
     }
