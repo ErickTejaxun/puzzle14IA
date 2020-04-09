@@ -43,25 +43,109 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
     public void Run()
     {
         imprimirConsola("Iniciando solución con algoritmo de Generación y Prueba");
-        buscarSolucion(Raiz);                
+        LinkedList<Nodo> soluciones = new LinkedList<>();
+        boolean continuar= true;
+        while(continuar)
+        {
+            for(int x = 0; x < 100 ; x++)
+            {
+                Nodo solucion = buscarSolucion(Raiz);
+                boolean flag = true;
+                for(Nodo nodo: soluciones)
+                {
+                    if(nodo.getRutaSolucion().equals(solucion.getRutaSolucion()))
+                    {
+                        if(!soluciones.isEmpty())
+                        {
+                            flag = false;
+                            break;                        
+                        }
+                    }
+                }
+                if(flag)
+                {
+                    if(solucion.getPuntuacion()==0)
+                    {
+                        soluciones.add(solucion);
+                    }                
+                }
+            }
+            
+            imprimirConsola("Se han encontrado " + soluciones.size());
+            
+            if(soluciones.isEmpty())
+            {
+                continuar = puzzleia.PuzzleIA.ventana.buscarDeNuevo();
+                if(!continuar){break;}
+            }
+            else
+            {
+                continuar = false;
+            }
+            
+            
+            int indiceTmp = 1;        
+            int costeMenor = 100000;
+            for(Nodo nodo: soluciones)
+            {
+                int costo = nodo.getCosto();
+                imprimirConsola(indiceTmp+")\tCosto: "+costo);
+                imprimirConsola("\t"+nodo.getRutaSolucion());
+                indiceTmp++;
+                if(costo <= costeMenor)
+                {
+                    costeMenor = costo;                
+                }
+            }
+
+            /*Mostramos la mejor solución*/
+            int posicionSolucion = 0;
+            Nodo tmp = null;
+            for(Nodo sol: soluciones)
+            {
+                if(sol.getCosto()==costeMenor)
+                {
+                    tmp = sol;
+                    break;
+                }
+                posicionSolucion++;
+            }
+            imprimirConsola("\n\nLa mejor solución es la opción número : \t" + posicionSolucion+1);        
+
+            if(puzzleia.PuzzleIA.ventana.mostrarRuta())
+            {
+                String rutaTablero = "";
+                int indexMovimiento = costeMenor; // indice del movimiento.
+                while(tmp!=null)
+                {
+                    rutaTablero =  indexMovimiento-- +")  Aplicando movimiento: "+ tmp.movimientoAnterior +"\n"+ tmp.tablero.getDataCadena()+"\n\n"+ rutaTablero ;
+                    tmp = tmp.ptr_padre;
+                }
+                imprimirConsola(rutaTablero);            
+            }
+
+
+            //imprimirConsola("Ruta a la solución: "+solucion.getRutaSolucion());            
+        }                
+        
     }
     
-    public void buscarSolucion(Nodo raiz)
+    public Nodo buscarSolucion(Nodo raiz)
     {                        
-        calcularMovimientos(raiz);
+        return calcularMovimientos(raiz);
     }
     
-    public LinkedList<Nodo> calcularMovimientos(Nodo raiz)
-    {
+    public Nodo calcularMovimientos(Nodo raiz)
+    {     
         /*Si el tablero actual supera cierto humbral de h' detenemos*/
         double puntuacion = raiz.tablero.getPuntuacion();        
-        imprimirConsola("Puntuación :"+puntuacion);
-        //System.out.println("Puntuación :"+puntuacion);
-        imprimirConsola(raiz.tablero.getDataCadena());
-        if( puntuacion < 1 )
+        int costo = raiz.getCosto();
+        /*imprimirConsola("Puntuación :"+puntuacion  + " \t Con un costo de :"+costo);        
+        imprimirConsola(raiz.tablero.getDataCadena());*/
+        if( puntuacion <= puzzleia.PuzzleIA.ventana.getPresicion() ||  costo > puzzleia.PuzzleIA.ventana.getCostoMaximo())
         {
-            return null;
-        }
+            return raiz;
+        }         
         
         LinkedList<Nodo> lista = new LinkedList<>();// Creamos la estructura para almacenar los posibles movimientos.
         /*Localizamos los ceros*/
@@ -84,7 +168,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
                 }
             }
         }
-        if(cero1==null || cero2==null){return lista;}
+        if(cero1==null || cero2==null){return raiz;}
         //imprimirConsola(cero1.mensajePosicion());
         //imprimirConsola(cero2.mensajePosicion());
         /*----------> Ya tenemos localizados los ceros.*/        
@@ -92,10 +176,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
         
         hacerMovimientos(lista, cero1, raiz);
         hacerMovimientos(lista, cero2, raiz);
-               
-//        Random r = new Random();
-//        int indice = r.nextInt(lista.size());
-//        buscarSolucion(lista.get(indice));        
+      
         double minimo = 10000000;
         LinkedList<Nodo> posiblesMovimientos = new LinkedList<>();
         for(Nodo n: lista)
@@ -116,19 +197,27 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
                 posiblesMovimientos.add(n);
             }            
         }
-        
+                
+        if(posiblesMovimientos.size()==0)
+        {   
+            return raiz;
+        }
         if(posiblesMovimientos.size()==1)
         {
-            buscarSolucion(posiblesMovimientos.get(0));
+            Nodo nuevo = buscarSolucion(posiblesMovimientos.get(0));
+            return nuevo;
         }
         else
         {
             /*Elegimos aleatoriamente el tablero al cual moverse*/
             Random r = new Random();
-            buscarSolucion(posiblesMovimientos.get(r.nextInt(posiblesMovimientos.size())));
-        }                        
-        return null;        
+            int indice = r.nextInt(posiblesMovimientos.size());
+            if(indice<0){indice = indice*-1;}
+            Nodo nuevo = buscarSolucion(posiblesMovimientos.get(indice));
+            return nuevo;
+        }                                                         
     }
+    
 
     
     public void hacerMovimientos(LinkedList<Nodo> lista, Cero cero, Nodo raiz)
@@ -142,10 +231,24 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             tmpValor = nuevoTab.getValor(cero.y, cero.x-1);
             nuevoTab.setValor(cero.y, cero.x -1, 0);
             nuevoTab.setValor(cero.y, cero.x, tmpValor);  
-            if(!nuevoTab.esIgual(raiz.tablero))
+            
+            Nodo nuevo = new Nodo(nuevoTab,raiz,"E"+tmpValor);
+            Nodo auxiliar = raiz;
+            boolean flag = true;
+            while(auxiliar!=null)
             {
-                lista.add(new Nodo(nuevoTab,raiz));
-            }            
+                if(auxiliar.tablero.esIgual(nuevoTab))
+                {
+                    flag = false;
+                    break;
+                }
+                auxiliar = auxiliar.ptr_padre;
+            }
+            if(flag)
+            {
+                lista.add(nuevo);
+            }
+           
         }
         /*Movimiento a la derecha. */
         if(cero.x + 1 <= Tablero.tamMatrix-1)
@@ -153,11 +256,24 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             Tablero nuevoTab = new Tablero(raiz.tablero.getData());
             tmpValor = nuevoTab.getValor(cero.y, cero.x+1);
             nuevoTab.setValor(cero.y, cero.x + 1, 0);
-            nuevoTab.setValor(cero.y, cero.x, tmpValor);      
-            if(!nuevoTab.esIgual(raiz.tablero))
+            nuevoTab.setValor(cero.y, cero.x, tmpValor); 
+            
+            Nodo nuevo = new Nodo(nuevoTab,raiz,"O"+tmpValor);
+            Nodo auxiliar = raiz;
+            boolean flag = true;
+            while(auxiliar!=null)
             {
-                lista.add(new Nodo(nuevoTab,raiz));
-            }            
+                if(auxiliar.tablero.esIgual(nuevoTab))
+                {
+                    flag = false;
+                    break;
+                }
+                auxiliar = auxiliar.ptr_padre;
+            }
+            if(flag)
+            {
+                lista.add(nuevo);
+            }         
         }
         /*Movimiento hacia arriba*/
         if(cero.y - 1 >= 0)
@@ -166,9 +282,22 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             tmpValor = nuevoTab.getValor(cero.y-1, cero.x);
             nuevoTab.setValor(cero.y - 1, cero.x, 0);
             nuevoTab.setValor(cero.y, cero.x, tmpValor);  
-            if(!nuevoTab.esIgual(raiz.tablero))
+
+            Nodo nuevo = new Nodo(nuevoTab,raiz,"S"+tmpValor);
+            Nodo auxiliar = raiz;
+            boolean flag = true;
+            while(auxiliar!=null)
             {
-                lista.add(new Nodo(nuevoTab,raiz));
+                if(auxiliar.tablero.esIgual(nuevoTab))
+                {
+                    flag = false;
+                    break;
+                }
+                auxiliar = auxiliar.ptr_padre;
+            }
+            if(flag)
+            {
+                lista.add(nuevo);
             }            
         }
         /*Movimiento hacia abajo*/
@@ -178,9 +307,22 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             tmpValor = nuevoTab.getValor(cero.y+1, cero.x);
             nuevoTab.setValor(cero.y + 1, cero.x, 0);
             nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-            if(!nuevoTab.esIgual(raiz.tablero))
+
+            Nodo nuevo = new Nodo(nuevoTab,raiz,"N"+tmpValor);
+            Nodo auxiliar = raiz;
+            boolean flag = true;
+            while(auxiliar!=null)
             {
-                lista.add(new Nodo(nuevoTab,raiz));
+                if(auxiliar.tablero.esIgual(nuevoTab))
+                {
+                    flag = false;
+                    break;
+                }
+                auxiliar = auxiliar.ptr_padre;
+            }
+            if(flag)
+            {
+                lista.add(nuevo);
             }            
         }
                    
