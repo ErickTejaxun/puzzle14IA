@@ -8,13 +8,13 @@ import Algoritmo.Cero;
 import Algoritmo.Nodo;
 import java.util.LinkedList;
 import Algoritmo.Tablero;
+import java.util.Random;
 
 /**
  *
  * @author erick
  * 
  */
-
 public class GeneracionYPrueba extends Algoritmo.Algoritmo
 {            
     public GeneracionYPrueba(Tablero t)
@@ -58,7 +58,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
         imprimirConsola("Puntuación :"+puntuacion);
         //System.out.println("Puntuación :"+puntuacion);
         imprimirConsola(raiz.tablero.getDataCadena());
-        if( puntuacion < 24 )
+        if( puntuacion < 1 )
         {
             return null;
         }
@@ -82,7 +82,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
                         break;
                     }
                 }
-            }        
+            }
         }
         if(cero1==null || cero2==null){return lista;}
         //imprimirConsola(cero1.mensajePosicion());
@@ -95,15 +95,38 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
                
 //        Random r = new Random();
 //        int indice = r.nextInt(lista.size());
-//        buscarSolucion(lista.get(indice));
-
+//        buscarSolucion(lista.get(indice));        
+        double minimo = 10000000;
+        LinkedList<Nodo> posiblesMovimientos = new LinkedList<>();
         for(Nodo n: lista)
         {
+            if(n.tablero.getPuntuacion() < minimo)
+            {
+                minimo = n.tablero.getPuntuacion();                
+            }
             //buscarSolucion(n);
-            imprimirConsola("Puntuacion:\t"+ n.tablero.getPuntuacion());
-            imprimirConsola(n.tablero.getDataCadena());
+            //imprimirConsola("Puntuacion:\t"+ n.tablero.getPuntuacion());
+            //imprimirConsola(n.tablero.getDataCadena());
         }
         
+        for(Nodo n:lista)
+        {
+            if(n.tablero.getPuntuacion()==minimo)
+            {
+                posiblesMovimientos.add(n);
+            }            
+        }
+        
+        if(posiblesMovimientos.size()==1)
+        {
+            buscarSolucion(posiblesMovimientos.get(0));
+        }
+        else
+        {
+            /*Elegimos aleatoriamente el tablero al cual moverse*/
+            Random r = new Random();
+            buscarSolucion(posiblesMovimientos.get(r.nextInt(posiblesMovimientos.size())));
+        }                        
         return null;        
     }
 
@@ -111,20 +134,21 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
     public void hacerMovimientos(LinkedList<Nodo> lista, Cero cero, Nodo raiz)
     {                
         int tmpValor = 0;
+        
         /*Movimientos a la izquierda*/
         if(cero.x -1 >= 0)
-        {            
+        {                  
             Tablero nuevoTab = new Tablero(raiz.tablero.getData());
             tmpValor = nuevoTab.getValor(cero.y, cero.x-1);
             nuevoTab.setValor(cero.y, cero.x -1, 0);
             nuevoTab.setValor(cero.y, cero.x, tmpValor);  
             if(!nuevoTab.esIgual(raiz.tablero))
             {
-                lista.add(new Nodo(nuevoTab));
+                lista.add(new Nodo(nuevoTab,raiz));
             }            
         }
         /*Movimiento a la derecha. */
-        if(cero.x + 1 < Tablero.tamMatrix)
+        if(cero.x + 1 <= Tablero.tamMatrix-1)
         {        
             Tablero nuevoTab = new Tablero(raiz.tablero.getData());
             tmpValor = nuevoTab.getValor(cero.y, cero.x+1);
@@ -132,7 +156,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             nuevoTab.setValor(cero.y, cero.x, tmpValor);      
             if(!nuevoTab.esIgual(raiz.tablero))
             {
-                lista.add(new Nodo(nuevoTab));
+                lista.add(new Nodo(nuevoTab,raiz));
             }            
         }
         /*Movimiento hacia arriba*/
@@ -144,19 +168,19 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             nuevoTab.setValor(cero.y, cero.x, tmpValor);  
             if(!nuevoTab.esIgual(raiz.tablero))
             {
-                lista.add(new Nodo(nuevoTab));
+                lista.add(new Nodo(nuevoTab,raiz));
             }            
         }
         /*Movimiento hacia abajo*/
-        if(cero.y + 1 < Tablero.tamMatrix)
+        if(cero.y + 1 <= Tablero.tamMatrix -1 )
         {       
             Tablero nuevoTab = new Tablero(raiz.tablero.getData());
             tmpValor = nuevoTab.getValor(cero.y+1, cero.x);
             nuevoTab.setValor(cero.y + 1, cero.x, 0);
-            nuevoTab.setValor(cero.y + 1, cero.x, tmpValor); 
+            nuevoTab.setValor(cero.y, cero.x, tmpValor); 
             if(!nuevoTab.esIgual(raiz.tablero))
             {
-                lista.add(new Nodo(nuevoTab));
+                lista.add(new Nodo(nuevoTab,raiz));
             }            
         }
                    
