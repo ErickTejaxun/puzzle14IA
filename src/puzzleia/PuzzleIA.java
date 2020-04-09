@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
-import GeneracionYPrueba.GeneracionYPrueba;
+import Algoritmo.GeneracionYPrueba.GeneracionYPrueba;
 
 /**
  *
@@ -18,12 +18,13 @@ import GeneracionYPrueba.GeneracionYPrueba;
  */
 public class PuzzleIA {
 
+    public static Interfaz ventana = null;
     /**
      * @param args the command line arguments
-     */
+     */    
     public static void main(String[] args) throws FileNotFoundException 
     {       
-        Interfaz ventana = new Interfaz();
+        ventana = new Interfaz();
         ventana.setBounds(100, 100, 1000, 600);
         //ventana.setResizable(false);
         ventana.show();

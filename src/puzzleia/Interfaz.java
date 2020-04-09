@@ -4,34 +4,26 @@
  * and open the template in the editor.
  */
 package puzzleia;
+import Algoritmo.Tablero;
+import Algoritmo.Algoritmo;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Highlighter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import GeneracionYPrueba.GeneracionYPrueba;
+import Algoritmo.GeneracionYPrueba.GeneracionYPrueba;
 import java.util.LinkedList;
 
 
@@ -95,6 +87,11 @@ public class Interfaz extends javax.swing.JFrame{
         lblposicion = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         algoritmoSeleccionado = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        costoMaximo = new javax.swing.JSpinner();
+        Presición = new javax.swing.JSpinner();
+        mejorRuta = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panelReporte = new javax.swing.JPanel();
@@ -155,7 +152,7 @@ public class Interfaz extends javax.swing.JFrame{
             panelDirectorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDirectorioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -172,6 +169,17 @@ public class Interfaz extends javax.swing.JFrame{
 
         algoritmoSeleccionado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Generación y prueba", "Métodos de escalada ", "Búsqueda del primero mejor.", "Algoritmo A*" }));
 
+        jLabel2.setText("Coste máximo");
+
+        jLabel3.setText("Presición");
+
+        costoMaximo.setModel(new javax.swing.SpinnerNumberModel(100, 0, null, 1));
+
+        Presición.setModel(new javax.swing.SpinnerNumberModel(0, 0, 100, 1));
+
+        mejorRuta.setSelected(true);
+        mejorRuta.setText("Mostrar Mejor Ruta");
+
         javax.swing.GroupLayout panelEdicionLayout = new javax.swing.GroupLayout(panelEdicion);
         panelEdicion.setLayout(panelEdicionLayout);
         panelEdicionLayout.setHorizontalGroup(
@@ -179,16 +187,26 @@ public class Interfaz extends javax.swing.JFrame{
             .addComponent(contenedorPaneles)
             .addGroup(panelEdicionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonEjecutar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(47, 47, 47)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(botonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(642, 642, 642)
-                        .addComponent(lblposicion, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                        .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40)
+                        .addComponent(mejorRuta)
+                        .addGap(150, 150, 150)
+                        .addComponent(lblposicion, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelEdicionLayout.setVerticalGroup(
             panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -199,13 +217,19 @@ public class Interfaz extends javax.swing.JFrame{
                         .addComponent(lblposicion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelEdicionLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(botonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(botonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(mejorRuta))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(contenedorPaneles, javax.swing.GroupLayout.DEFAULT_SIZE, 438, Short.MAX_VALUE)
+                    .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addComponent(contenedorPaneles, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -263,7 +287,7 @@ public class Interfaz extends javax.swing.JFrame{
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1297, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1461, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -291,7 +315,7 @@ public class Interfaz extends javax.swing.JFrame{
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1297, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1461, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -324,7 +348,7 @@ public class Interfaz extends javax.swing.JFrame{
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1307, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1473, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -354,7 +378,7 @@ public class Interfaz extends javax.swing.JFrame{
                 .addGroup(panelEditorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelEdicion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelDirectorio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1085,7 +1109,8 @@ public class Interfaz extends javax.swing.JFrame{
         /*Fin Guardar*------------*/
         
         String nombreArchivo = contenedorPaneles.getTitleAt(contenedorPaneles.getSelectedIndex());
-        String pathArchivo = direcciones.get(nombreArchivo);                        
+        String pathArchivo = direcciones.get(nombreArchivo);    
+        Algoritmo algoritmo= null;
         /*
         Aquí comienza la ejecución de la soulución.
         */               
@@ -1094,11 +1119,11 @@ public class Interfaz extends javax.swing.JFrame{
             int matriz[][]; // Matriz inicial
             matriz = obtenerMatriz(pathArchivo); // Llenamos la matriz desde el fichero.
             Tablero tab = new Tablero(matriz); // Creamos el tablero inicial
+            
             switch(algoritmoSelected)
             {
                 case 0:/*Generacion y prueba*/
-                    GeneracionYPrueba algoritmo =  new GeneracionYPrueba(tab);
-                    imprimirConsola(tab.getDataCadena());                    
+                    algoritmo =  new GeneracionYPrueba(tab);
                     break;
                 case 1:/*Método de escalada*/
                     break;
@@ -1112,7 +1137,12 @@ public class Interfaz extends javax.swing.JFrame{
         {
             Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
             this.imprimirConsola("Error, el archivo no ha sido encontrado. "+ ex.getMessage());
-        }       
+        } 
+        /**/
+        if(algoritmo!=null)
+        {
+            algoritmo.Run(); // Ejecutamos el algoritmo para solucionar el tablero.
+        }
     }
     
     public boolean esCuadrada(int mat[][])
@@ -1148,9 +1178,14 @@ public class Interfaz extends javax.swing.JFrame{
         System.out.println(cadena);
     }
     
-    public void imprimirConsola(String cadena)
+    public void imprimirConsola(Object cadena)
     {        
-        this.textAreaConsola.setText( this.textAreaConsola.getText() + "\n" + cadena);
+        this.textAreaConsola.setText( this.textAreaConsola.getText() + "\n" + cadena.toString());
+    }
+    
+    public void limpiarConsola()
+    {
+        this.textAreaConsola.setText("");
     }
     
     
@@ -1350,7 +1385,7 @@ public class Interfaz extends javax.swing.JFrame{
         }        
    }
    
-    public int[][] obtenerMatriz(String path) throws FileNotFoundException
+    public  int[][] obtenerMatriz(String path) throws FileNotFoundException
     {   
         int data[][] = null ;
         File archivo= new File(path);    
@@ -1389,16 +1424,40 @@ public class Interfaz extends javax.swing.JFrame{
         }
         return data;
     }   
-   
+    
+    public int getCostoMaximo()
+    {
+        return (int) this.costoMaximo.getValue();
+    }
+    
+    public int getPresicion()
+    {
+        return (int) this.Presición.getValue();
+    }
+    
+    public boolean mostrarRuta()
+    {
+        return this.mejorRuta.isSelected();
+    }
+          
+    public boolean buscarDeNuevo()    
+    {
+        int input = JOptionPane.showConfirmDialog(null, "No se han encontrado soluciones con "+ this.getCostoMaximo() + ". ¿Desea volver a buscar?");
+        return input == 0;        
+    }
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSpinner Presición;
     private javax.swing.JMenuItem abrirCarpeta;
     private javax.swing.JComboBox<String> algoritmoSeleccionado;
     private javax.swing.JTree arbolDirectorio;
     private javax.swing.JButton botonEjecutar;
     private javax.swing.JTabbedPane contenedorPaneles;
+    private javax.swing.JSpinner costoMaximo;
     private javax.swing.JMenuItem guardarComo;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
@@ -1422,6 +1481,7 @@ public class Interfaz extends javax.swing.JFrame{
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel labelReporte;
     private javax.swing.JLabel lblposicion;
+    private javax.swing.JCheckBox mejorRuta;
     private javax.swing.JMenu menuArchivo;
     private javax.swing.JMenu menuEjecucion;
     private javax.swing.JMenuItem menuGuardar;

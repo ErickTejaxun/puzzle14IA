@@ -42,6 +42,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
     @Override
     public void Run()
     {
+        limpiarConsola();
         imprimirConsola("Iniciando solución con algoritmo de Generación y Prueba");
         LinkedList<Nodo> soluciones = new LinkedList<>();
         boolean continuar= true;
@@ -198,7 +199,7 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
             }            
         }
                 
-        if(posiblesMovimientos.size()==0)
+        if(posiblesMovimientos.isEmpty())
         {   
             return raiz;
         }
@@ -331,5 +332,10 @@ public class GeneracionYPrueba extends Algoritmo.Algoritmo
     public void imprimirConsola(Object s)
     {
         puzzleia.PuzzleIA.ventana.imprimirConsola(s);
+    }
+    
+    public void limpiarConsola()
+    {
+        puzzleia.PuzzleIA.ventana.limpiarConsola();
     }
 }
