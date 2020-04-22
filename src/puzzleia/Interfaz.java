@@ -6,6 +6,9 @@
 package puzzleia;
 import Algoritmo.Tablero;
 import Algoritmo.Algoritmo;
+import Algoritmo.DeEscaladaMaximaPendiente;
+import Algoritmo.AlgoritmoA;
+import Algoritmo.EnfriamientoSimulado;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import Algoritmo.GeneracionYPrueba.GeneracionYPrueba;
+import Algoritmo.GeneracionYPrueba;
 import java.util.LinkedList;
 
 
@@ -92,6 +95,7 @@ public class Interfaz extends javax.swing.JFrame{
         costoMaximo = new javax.swing.JSpinner();
         Presición = new javax.swing.JSpinner();
         mejorRuta = new javax.swing.JCheckBox();
+        estadosRepetidos = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panelReporte = new javax.swing.JPanel();
@@ -167,18 +171,21 @@ public class Interfaz extends javax.swing.JFrame{
 
         jLabel1.setText("Algoritmo");
 
-        algoritmoSeleccionado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Generación y prueba", "Métodos de escalada ", "Búsqueda del primero mejor.", "Algoritmo A*" }));
+        algoritmoSeleccionado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Generación y prueba", "Métodos de escalada - Máxima Pendiente", "Enfriamiento Simulado", "Algoritmo A*" }));
 
         jLabel2.setText("Coste máximo");
 
         jLabel3.setText("Presición");
 
-        costoMaximo.setModel(new javax.swing.SpinnerNumberModel(100, 0, null, 1));
+        costoMaximo.setModel(new javax.swing.SpinnerNumberModel(1000, 0, null, 1));
 
         Presición.setModel(new javax.swing.SpinnerNumberModel(0, 0, 100, 1));
 
         mejorRuta.setSelected(true);
         mejorRuta.setText("Mostrar Mejor Ruta");
+
+        estadosRepetidos.setSelected(true);
+        estadosRepetidos.setText("Verificar Estados Repetidos");
 
         javax.swing.GroupLayout panelEdicionLayout = new javax.swing.GroupLayout(panelEdicion);
         panelEdicion.setLayout(panelEdicionLayout);
@@ -199,13 +206,15 @@ public class Interfaz extends javax.swing.JFrame{
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(40, 40, 40)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(40, 40, 40)
                         .addComponent(mejorRuta)
                         .addGap(150, 150, 150)
                         .addComponent(lblposicion, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(estadosRepetidos))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelEdicionLayout.setVerticalGroup(
@@ -223,11 +232,13 @@ public class Interfaz extends javax.swing.JFrame{
                             .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(mejorRuta))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
-                    .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(estadosRepetidos)))
                 .addGap(20, 20, 20)
                 .addComponent(contenedorPaneles, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
                 .addContainerGap())
@@ -666,13 +677,19 @@ public class Interfaz extends javax.swing.JFrame{
         
         File aDirectory = new File(path);        
         String[] filesInDir = aDirectory.list();
-        for ( int i=0; i<filesInDir.length; i++ )
-        {            
+        for (String filesInDir1 : filesInDir) 
+        {
+            if (filesInDir1.contains(".txt")) 
+            {
+                direcciones.put(filesInDir1, path+"\\" + filesInDir1);
+            }            
+            /*
             if(filesInDir[i].contains(".d++")||filesInDir[i].contains(".djs")||filesInDir[i].contains(".dasm"))
             {
-                direcciones.put(filesInDir[i],path+"\\"+filesInDir[i]);
-            }
-        }        
+            }*/
+        }
+        
+        
         
         System.out.println(direcciones.toString());
         //nuevoArchivoConData(nombreCarpeta, data);                
@@ -1126,10 +1143,13 @@ public class Interfaz extends javax.swing.JFrame{
                     algoritmo =  new GeneracionYPrueba(tab);
                     break;
                 case 1:/*Método de escalada*/
+                    algoritmo = new DeEscaladaMaximaPendiente(tab);
                     break;
-                case 2:/*Búsqueda del primero mejor*/
+                case 2:/*Enfriamiento simulado*/
+                    algoritmo = new EnfriamientoSimulado(tab);
                     break;
                 case 3:/*Algoritmo A* */
+                    algoritmo = new AlgoritmoA(tab);
                     break;
             }
             
@@ -1440,11 +1460,17 @@ public class Interfaz extends javax.swing.JFrame{
         return this.mejorRuta.isSelected();
     }
           
-    public boolean buscarDeNuevo()    
+    public boolean buscarDeNuevo(int val)    
     {
-        int input = JOptionPane.showConfirmDialog(null, "No se han encontrado soluciones con "+ this.getCostoMaximo() + ". ¿Desea volver a buscar?");
+        int input = JOptionPane.showConfirmDialog(null, "No se han encontrado soluciones con "+ this.getCostoMaximo() + ". ¿Desea volver a buscar?. Mejor puntaje "+val);
         return input == 0;        
     }
+    
+    public boolean buscarDeNuevo()    
+    {
+        int input = JOptionPane.showConfirmDialog(null, "No se han encontrado soluciones con "+ this.getCostoMaximo() + ". ¿Desea volver a buscar?.");
+        return input == 0;        
+    }    
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner Presición;
@@ -1454,6 +1480,7 @@ public class Interfaz extends javax.swing.JFrame{
     private javax.swing.JButton botonEjecutar;
     private javax.swing.JTabbedPane contenedorPaneles;
     private javax.swing.JSpinner costoMaximo;
+    private javax.swing.JCheckBox estadosRepetidos;
     private javax.swing.JMenuItem guardarComo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -1498,6 +1525,12 @@ public class Interfaz extends javax.swing.JFrame{
     public void setModelTablaSimbolos(DefaultTableModel m)
     {
         this.tabladeSimbolos.setModel(m);
+    }
+    
+    
+    public boolean verificarEstadosRepetidos()
+    {
+        return this.estadosRepetidos.isSelected();
     }
     
 }

@@ -247,14 +247,17 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="costoMaximo" alignment="0" min="-2" pref="121" max="-2" attributes="0"/>
+                          <Component id="Presición" alignment="0" min="-2" pref="121" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <Component id="costoMaximo" min="-2" pref="121" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                               <Component id="mejorRuta" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="150" max="-2" attributes="0"/>
                               <Component id="lblposicion" min="-2" pref="149" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="Presición" min="-2" pref="121" max="-2" attributes="0"/>
+                          <Component id="estadosRepetidos" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -279,11 +282,14 @@
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel1" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
-                          <Component id="algoritmoSeleccionado" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="Presición" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel1" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
+                              <Component id="algoritmoSeleccionado" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="Presición" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="estadosRepetidos" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Component id="contenedorPaneles" pref="485" max="32767" attributes="0"/>
@@ -317,8 +323,8 @@
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="4">
                     <StringItem index="0" value="Generaci&#xf3;n y prueba"/>
-                    <StringItem index="1" value="M&#xe9;todos de escalada "/>
-                    <StringItem index="2" value="B&#xfa;squeda del primero mejor."/>
+                    <StringItem index="1" value="M&#xe9;todos de escalada - M&#xe1;xima Pendiente"/>
+                    <StringItem index="2" value="Enfriamiento Simulado"/>
                     <StringItem index="3" value="Algoritmo A*"/>
                   </StringArray>
                 </Property>
@@ -340,7 +346,7 @@
             <Component class="javax.swing.JSpinner" name="costoMaximo">
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="100" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
+                  <SpinnerModel initial="1000" minimum="0" numberType="java.lang.Integer" stepSize="1" type="number"/>
                 </Property>
               </Properties>
             </Component>
@@ -355,6 +361,12 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="Mostrar Mejor Ruta"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="estadosRepetidos">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Verificar Estados Repetidos"/>
               </Properties>
             </Component>
           </SubComponents>
