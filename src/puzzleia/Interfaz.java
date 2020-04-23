@@ -98,7 +98,7 @@ public class Interfaz extends javax.swing.JFrame{
         Presición = new javax.swing.JSpinner();
         estadosRepetidos = new javax.swing.JCheckBox();
         mostrarTodasLasSoluciones = new javax.swing.JCheckBox();
-        bloquearCasillas1 = new javax.swing.JCheckBox();
+        bloquearCasillas = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         textAreaConsola = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -195,11 +195,11 @@ public class Interfaz extends javax.swing.JFrame{
         mostrarTodasLasSoluciones.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
         mostrarTodasLasSoluciones.setText("Mostrar todas las soluciones");
         panelEditor.add(mostrarTodasLasSoluciones);
-        mostrarTodasLasSoluciones.setBounds(880, 70, 220, 22);
+        mostrarTodasLasSoluciones.setBounds(880, 70, 220, 30);
 
-        bloquearCasillas1.setText("Casillas Bloqueadas");
-        panelEditor.add(bloquearCasillas1);
-        bloquearCasillas1.setBounds(880, 40, 220, 23);
+        bloquearCasillas.setText("Casillas Bloqueadas");
+        panelEditor.add(bloquearCasillas);
+        bloquearCasillas.setBounds(880, 40, 220, 23);
 
         textAreaConsola.setBackground(new java.awt.Color(0, 0, 0));
         textAreaConsola.setColumns(20);
@@ -902,6 +902,43 @@ public class Interfaz extends javax.swing.JFrame{
             int matriz[][]; // Matriz inicial
             matriz = obtenerMatriz(pathArchivo); // Llenamos la matriz desde el fichero.
             Tablero tab = new Tablero(matriz); // Creamos el tablero inicial
+            Tablero.iniciarTableroPermitido();
+            /*Verificamos si hay que bloquear casillas*/
+            if(this.bloquearCasillas())
+            {                                
+                boolean preguntar = true;
+                while(preguntar)
+                {
+                    String posicion=JOptionPane.showInputDialog(this,"Bloquear casillas", "Ingrese la coordenada x,y. Ejemplo 0,1", 1);
+                    if(posicion == null)
+                    {
+                        break;
+                    }
+                    String posiciones[] = posicion.split(",");
+                    if(posiciones.length!=2)
+                    {
+                        JOptionPane.showMessageDialog(this, "Error: Formato incorrecto", posicion , 1);
+                        continue;
+                    }
+                    try 
+                    {
+                        int y = Integer.parseInt(posiciones[0]);
+                        int x = Integer.parseInt(posiciones[1]);
+                        if(y>= Tablero.tamMatrix || x>= Tablero.tamMatrix)
+                        {
+                            JOptionPane.showMessageDialog(this, "Error: sobrepasando el tamaño máximo de la matriz", posicion , 1);
+                            continue;
+                        }
+                        Tablero.dataEstado[y][x] = false;                        
+                    } catch (NumberFormatException e) 
+                    {
+                        JOptionPane.showMessageDialog(this, "Error: Formato incorrecto", posicion , 1);
+                       
+                    }
+                    
+                }
+            }
+            
             
             switch(algoritmoSelected)
             {
@@ -1246,7 +1283,7 @@ public class Interfaz extends javax.swing.JFrame{
     private javax.swing.JMenuItem abrirCarpeta;
     private javax.swing.JComboBox<String> algoritmoSeleccionado;
     private javax.swing.JTree arbolDirectorio;
-    private javax.swing.JCheckBox bloquearCasillas1;
+    private javax.swing.JCheckBox bloquearCasillas;
     private javax.swing.JButton botonEjecutar;
     private javax.swing.JTabbedPane contenedorPaneles;
     private javax.swing.JSpinner costoMaximo;
@@ -1289,5 +1326,8 @@ public class Interfaz extends javax.swing.JFrame{
         return this.mostrarTodasLasSoluciones.isSelected();
     }
     
-    
+    public boolean bloquearCasillas()
+    {
+        return this.bloquearCasillas.isSelected();
+    }
 }
