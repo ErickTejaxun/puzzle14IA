@@ -27,6 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import Algoritmo.GeneracionYPrueba;
+import java.io.IOException;
 import java.util.LinkedList;
 
 
@@ -84,57 +85,45 @@ public class Interfaz extends javax.swing.JFrame{
         panelDirectorio = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         arbolDirectorio = new javax.swing.JTree();
-        panelEdicion = new javax.swing.JPanel();
-        contenedorPaneles = new javax.swing.JTabbedPane();
+        JPanelSalida = new javax.swing.JPanel();
         botonEjecutar = new javax.swing.JButton();
-        lblposicion = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        contenedorPaneles = new javax.swing.JTabbedPane();
         algoritmoSeleccionado = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         costoMaximo = new javax.swing.JSpinner();
-        Presición = new javax.swing.JSpinner();
         mejorRuta = new javax.swing.JCheckBox();
+        movimientosDiagonal = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        Presición = new javax.swing.JSpinner();
         estadosRepetidos = new javax.swing.JCheckBox();
-        jPanel1 = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        panelReporte = new javax.swing.JPanel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        labelReporte = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        mostrarTodasLasSoluciones = new javax.swing.JCheckBox();
+        bloquearCasillas1 = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tablaErrores = new javax.swing.JTable();
-        jPanel6 = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        reporteCompilacion = new javax.swing.JTextArea();
-        jPanel4 = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
         textAreaConsola = new javax.swing.JTextArea();
-        jPanel5 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tabladeSimbolos = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuArchivo = new javax.swing.JMenu();
         jMenuItem9 = new javax.swing.JMenuItem();
         abrirCarpeta = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
         menuGuardar = new javax.swing.JMenuItem();
-        guardarComo = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
-        menuEjecucion = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
+        setMinimumSize(new java.awt.Dimension(1110, 650));
+        getContentPane().setLayout(new java.awt.CardLayout());
 
+        panelEditor.setBackground(new java.awt.Color(204, 204, 204));
         panelEditor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelEditor.setMaximumSize(new java.awt.Dimension(1100, 600));
+        panelEditor.setMinimumSize(new java.awt.Dimension(1100, 600));
+        panelEditor.setPreferredSize(new java.awt.Dimension(1100, 700));
+        panelEditor.setLayout(null);
 
-        panelDirectorio.setBackground(new java.awt.Color(153, 255, 51));
+        panelDirectorio.setBackground(new java.awt.Color(204, 204, 204));
         panelDirectorio.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelDirectorio.setLayout(null);
 
         arbolDirectorio.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
@@ -143,24 +132,16 @@ public class Interfaz extends javax.swing.JFrame{
         });
         jScrollPane1.setViewportView(arbolDirectorio);
 
-        javax.swing.GroupLayout panelDirectorioLayout = new javax.swing.GroupLayout(panelDirectorio);
-        panelDirectorio.setLayout(panelDirectorioLayout);
-        panelDirectorioLayout.setHorizontalGroup(
-            panelDirectorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDirectorioLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelDirectorioLayout.setVerticalGroup(
-            panelDirectorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDirectorioLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        panelDirectorio.add(jScrollPane1);
+        jScrollPane1.setBounds(14, 14, 290, 280);
 
-        panelEdicion.setBackground(new java.awt.Color(204, 204, 255));
+        panelEditor.add(panelDirectorio);
+        panelDirectorio.setBounds(1, 1, 315, 310);
+
+        JPanelSalida.setBackground(new java.awt.Color(204, 255, 102));
+        JPanelSalida.setLayout(new javax.swing.BoxLayout(JPanelSalida, javax.swing.BoxLayout.LINE_AXIS));
+        panelEditor.add(JPanelSalida);
+        JPanelSalida.setBounds(1648, 451, 0, 562);
 
         botonEjecutar.setText("Buscar solución");
         botonEjecutar.addActionListener(new java.awt.event.ActionListener() {
@@ -168,233 +149,68 @@ public class Interfaz extends javax.swing.JFrame{
                 botonEjecutarActionPerformed(evt);
             }
         });
+        panelEditor.add(botonEjecutar);
+        botonEjecutar.setBounds(320, 10, 300, 32);
 
         jLabel1.setText("Algoritmo");
+        panelEditor.add(jLabel1);
+        jLabel1.setBounds(320, 50, 100, 21);
+        panelEditor.add(contenedorPaneles);
+        contenedorPaneles.setBounds(330, 110, 770, 200);
 
         algoritmoSeleccionado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Generación y prueba", "Métodos de escalada - Máxima Pendiente", "Enfriamiento Simulado", "Algoritmo A*" }));
+        panelEditor.add(algoritmoSeleccionado);
+        algoritmoSeleccionado.setBounds(430, 50, 190, 24);
 
         jLabel2.setText("Coste máximo");
-
-        jLabel3.setText("Presición");
+        panelEditor.add(jLabel2);
+        jLabel2.setBounds(320, 80, 100, 20);
 
         costoMaximo.setModel(new javax.swing.SpinnerNumberModel(1000, 0, null, 1));
-
-        Presición.setModel(new javax.swing.SpinnerNumberModel(0, 0, 100, 1));
+        panelEditor.add(costoMaximo);
+        costoMaximo.setBounds(430, 80, 190, 20);
 
         mejorRuta.setSelected(true);
         mejorRuta.setText("Mostrar Mejor Ruta");
+        panelEditor.add(mejorRuta);
+        mejorRuta.setBounds(640, 10, 231, 23);
+
+        movimientosDiagonal.setText("Movimientos diagonal");
+        panelEditor.add(movimientosDiagonal);
+        movimientosDiagonal.setBounds(640, 40, 231, 23);
+
+        jLabel3.setText("Presición");
+        panelEditor.add(jLabel3);
+        jLabel3.setBounds(640, 80, 98, 20);
+
+        Presición.setModel(new javax.swing.SpinnerNumberModel(0, 0, 100, 1));
+        panelEditor.add(Presición);
+        Presición.setBounds(720, 80, 150, 20);
 
         estadosRepetidos.setSelected(true);
         estadosRepetidos.setText("Verificar Estados Repetidos");
+        panelEditor.add(estadosRepetidos);
+        estadosRepetidos.setBounds(880, 10, 221, 23);
 
-        javax.swing.GroupLayout panelEdicionLayout = new javax.swing.GroupLayout(panelEdicion);
-        panelEdicion.setLayout(panelEdicionLayout);
-        panelEdicionLayout.setHorizontalGroup(
-            panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(contenedorPaneles)
-            .addGroup(panelEdicionLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(botonEjecutar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(47, 47, 47)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(40, 40, 40)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(mejorRuta)
-                        .addGap(150, 150, 150)
-                        .addComponent(lblposicion, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(estadosRepetidos))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panelEdicionLayout.setVerticalGroup(
-            panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelEdicionLayout.createSequentialGroup()
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelEdicionLayout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(lblposicion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(botonEjecutar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(costoMaximo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(mejorRuta))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(algoritmoSeleccionado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Presición, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(estadosRepetidos)))
-                .addGap(20, 20, 20)
-                .addComponent(contenedorPaneles, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        mostrarTodasLasSoluciones.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
+        mostrarTodasLasSoluciones.setText("Mostrar todas las soluciones");
+        panelEditor.add(mostrarTodasLasSoluciones);
+        mostrarTodasLasSoluciones.setBounds(880, 70, 220, 22);
 
-        jPanel1.setBackground(new java.awt.Color(204, 255, 102));
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
-
-        panelReporte.setLayout(new javax.swing.BoxLayout(panelReporte, javax.swing.BoxLayout.LINE_AXIS));
-
-        labelReporte.setText("jLabel2");
-        labelReporte.setMaximumSize(new java.awt.Dimension(1000, 1000));
-        labelReporte.setMinimumSize(new java.awt.Dimension(1000, 1000));
-        labelReporte.setPreferredSize(new java.awt.Dimension(1000, 1000));
-        jScrollPane6.setViewportView(labelReporte);
-
-        panelReporte.add(jScrollPane6);
-
-        jTabbedPane1.addTab("Reportes", panelReporte);
-
-        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.Y_AXIS));
-
-        tablaErrores.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        tablaErrores.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Id", "Descripción", "Linea", "Columna", "Tipo"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane2.setViewportView(tablaErrores);
-
-        jPanel3.add(jScrollPane2);
-
-        reporteCompilacion.setBackground(new java.awt.Color(0, 0, 0));
-        reporteCompilacion.setColumns(20);
-        reporteCompilacion.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        reporteCompilacion.setForeground(new java.awt.Color(255, 255, 255));
-        reporteCompilacion.setRows(5);
-        jScrollPane5.setViewportView(reporteCompilacion);
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1461, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jPanel3.add(jPanel6);
-
-        jTabbedPane1.addTab("Errores", jPanel3);
+        bloquearCasillas1.setText("Casillas Bloqueadas");
+        panelEditor.add(bloquearCasillas1);
+        bloquearCasillas1.setBounds(880, 40, 220, 23);
 
         textAreaConsola.setBackground(new java.awt.Color(0, 0, 0));
         textAreaConsola.setColumns(20);
-        textAreaConsola.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
         textAreaConsola.setForeground(new java.awt.Color(255, 255, 255));
         textAreaConsola.setRows(5);
-        jScrollPane4.setViewportView(textAreaConsola);
+        jScrollPane2.setViewportView(textAreaConsola);
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 1461, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        panelEditor.add(jScrollPane2);
+        jScrollPane2.setBounds(10, 320, 1090, 270);
 
-        jTabbedPane1.addTab("Consola", jPanel4);
-
-        tabladeSimbolos.setFont(new java.awt.Font("Consolas", 0, 14)); // NOI18N
-        tabladeSimbolos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane3.setViewportView(tabladeSimbolos);
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1473, Short.MAX_VALUE))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Tabla de Símbolos", jPanel5);
-
-        jPanel1.add(jTabbedPane1);
-
-        javax.swing.GroupLayout panelEditorLayout = new javax.swing.GroupLayout(panelEditor);
-        panelEditor.setLayout(panelEditorLayout);
-        panelEditorLayout.setHorizontalGroup(
-            panelEditorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelEditorLayout.createSequentialGroup()
-                .addComponent(panelDirectorio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelEdicion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-        );
-        panelEditorLayout.setVerticalGroup(
-            panelEditorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelEditorLayout.createSequentialGroup()
-                .addGroup(panelEditorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelEdicion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelDirectorio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        getContentPane().add(panelEditor);
+        getContentPane().add(panelEditor, "card2");
 
         menuArchivo.setText("Archivo");
 
@@ -423,14 +239,6 @@ public class Interfaz extends javax.swing.JFrame{
         });
         menuArchivo.add(jMenuItem1);
 
-        jMenuItem2.setText("Nueva Carpeta");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        menuArchivo.add(jMenuItem2);
-
         menuGuardar.setText("Guardar");
         menuGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -438,15 +246,6 @@ public class Interfaz extends javax.swing.JFrame{
             }
         });
         menuArchivo.add(menuGuardar);
-
-        guardarComo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
-        guardarComo.setText("Guardar como");
-        guardarComo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                guardarComoActionPerformed(evt);
-            }
-        });
-        menuArchivo.add(guardarComo);
 
         jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem4.setText("Cerrar (tab Actual)");
@@ -462,29 +261,6 @@ public class Interfaz extends javax.swing.JFrame{
 
         jMenuBar1.add(menuArchivo);
 
-        menuEjecucion.setText("Depurar");
-
-        jMenuItem6.setText("Iniciar");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        menuEjecucion.add(jMenuItem6);
-
-        jMenuItem7.setText("Siguiente Paso");
-        menuEjecucion.add(jMenuItem7);
-
-        jMenuItem8.setText("Terminar Todo");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8ActionPerformed(evt);
-            }
-        });
-        menuEjecucion.add(jMenuItem8);
-
-        jMenuBar1.add(menuEjecucion);
-
         setJMenuBar(jMenuBar1);
 
         pack();
@@ -493,10 +269,6 @@ public class Interfaz extends javax.swing.JFrame{
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         nuevoArchivo();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        nuevaCarpeta();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void arbolDirectorioValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_arbolDirectorioValueChanged
         try 
@@ -507,14 +279,6 @@ public class Interfaz extends javax.swing.JFrame{
         {
         }
     }//GEN-LAST:event_arbolDirectorioValueChanged
-
-    private void guardarComoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarComoActionPerformed
-        try {
-            guardarArchivoNuevo();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_guardarComoActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         try {
@@ -540,17 +304,6 @@ public class Interfaz extends javax.swing.JFrame{
     private void botonEjecutarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEjecutarActionPerformed
         buscarSolucion();
     }//GEN-LAST:event_botonEjecutarActionPerformed
-
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        abrirAST();
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
-
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-
-       
-        
-        
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
 
     private void abrirCarpetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirCarpetaActionPerformed
         try {
@@ -680,14 +433,27 @@ public class Interfaz extends javax.swing.JFrame{
         for (String filesInDir1 : filesInDir) 
         {
             if (filesInDir1.contains(".txt")) 
-            {
-                direcciones.put(filesInDir1, path+"\\" + filesInDir1);
+            {                
+                File archivo= new File(path+"/"+filesInDir1); 
+                Scanner sc = new Scanner(archivo); 
+                String data = "";
+                while (sc.hasNextLine())
+                {
+                    if(data.equals(""))
+                    {
+                        data = sc.nextLine();
+                    }
+                    else
+                    {
+                        data = data + "\n" + sc.nextLine();
+                    }
+                }                  
+                nuevoArchivoConData(path+"/"+filesInDir1, data);                  
+                direcciones.put(path+"/"+filesInDir1,path+"/"+filesInDir1);
             }            
-            /*
-            if(filesInDir[i].contains(".d++")||filesInDir[i].contains(".djs")||filesInDir[i].contains(".dasm"))
-            {
-            }*/
+
         }
+        
         
         
         
@@ -733,7 +499,7 @@ public class Interfaz extends javax.swing.JFrame{
     
     public void setPosicion(int l, int c)
     {
-        this.lblposicion.setText("Linea:"+(l+1) +" Columna:"+c);
+        //this.lblposicion.setText("Linea:"+(l+1) +" Columna:"+c);
     }
  
     //Este metodo creará una nuevo panel con su editor en blanco.
@@ -846,7 +612,7 @@ public class Interfaz extends javax.swing.JFrame{
     
     public void guardarArchivoNuevo() throws FileNotFoundException
     {        
-        String tipo = ".coline";       
+        String tipo = ".txt";       
         /*
         String[] options = {".gcc", ".3d","cancelar"};
         int x = -1;
@@ -894,7 +660,7 @@ public class Interfaz extends javax.swing.JFrame{
         nombre += tipo;
         
         if(directorio==null){directorio= pathProyectos+"\\"+nombre;}
-        else{directorio= directorio+"\\"+nombre;}
+        else{directorio= directorio+"/"+nombre;}
         File archivo=new File(directorio);
         try (PrintWriter writer = new PrintWriter(archivo)) 
         {
@@ -1216,7 +982,7 @@ public class Interfaz extends javax.swing.JFrame{
            //System.out.println (miDir.getCanonicalPath());
            path=miDir.getCanonicalPath();
          }
-         catch(Exception e) 
+         catch(IOException e) 
          {
            e.printStackTrace();
          }
@@ -1411,10 +1177,11 @@ public class Interfaz extends javax.swing.JFrame{
         File archivo= new File(path);    
         Scanner sc = new Scanner(archivo); 
         /*Obtenemos cada una de las lineas*/
-        LinkedList<String> lineas = new LinkedList<String>();
+        LinkedList<String> lineas = new LinkedList<String>();        
         while (sc.hasNextLine())
         {
-            lineas.add(sc.nextLine());            
+            String s= sc.nextLine(); 
+            if(!s.trim().equals("")){lineas.add(s);}            
         }                
         /*Verificamos que la matriz sea cuadrada*/        
         int numeroColumnas, numeroFilas = lineas.size();
@@ -1442,6 +1209,7 @@ public class Interfaz extends javax.swing.JFrame{
                }
             }            
         }
+        Tablero.tamMatrix = numeroFilas;
         return data;
     }   
     
@@ -1473,58 +1241,41 @@ public class Interfaz extends javax.swing.JFrame{
     }    
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel JPanelSalida;
     private javax.swing.JSpinner Presición;
     private javax.swing.JMenuItem abrirCarpeta;
     private javax.swing.JComboBox<String> algoritmoSeleccionado;
     private javax.swing.JTree arbolDirectorio;
+    private javax.swing.JCheckBox bloquearCasillas1;
     private javax.swing.JButton botonEjecutar;
     private javax.swing.JTabbedPane contenedorPaneles;
     private javax.swing.JSpinner costoMaximo;
     private javax.swing.JCheckBox estadosRepetidos;
-    private javax.swing.JMenuItem guardarComo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JLabel labelReporte;
-    private javax.swing.JLabel lblposicion;
     private javax.swing.JCheckBox mejorRuta;
     private javax.swing.JMenu menuArchivo;
-    private javax.swing.JMenu menuEjecucion;
     private javax.swing.JMenuItem menuGuardar;
+    private javax.swing.JCheckBox mostrarTodasLasSoluciones;
+    private javax.swing.JCheckBox movimientosDiagonal;
     private javax.swing.JPanel panelDirectorio;
-    private javax.swing.JPanel panelEdicion;
     private javax.swing.JPanel panelEditor;
-    private javax.swing.JPanel panelReporte;
-    private javax.swing.JTextArea reporteCompilacion;
-    private javax.swing.JTable tablaErrores;
-    private javax.swing.JTable tabladeSimbolos;
     private javax.swing.JTextArea textAreaConsola;
     // End of variables declaration//GEN-END:variables
 
-    public void setModelTablaSimbolos(DefaultTableModel m)
+
+    
+    public boolean movimientosDiagonal()
     {
-        this.tabladeSimbolos.setModel(m);
+        return this.movimientosDiagonal.isSelected();
     }
     
     
@@ -1532,5 +1283,11 @@ public class Interfaz extends javax.swing.JFrame{
     {
         return this.estadosRepetidos.isSelected();
     }
+    
+    public boolean mostrarTodasLasSoluciones()
+    {
+        return this.mostrarTodasLasSoluciones.isSelected();
+    }
+    
     
 }
