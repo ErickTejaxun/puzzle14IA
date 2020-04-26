@@ -46,35 +46,13 @@ public class AlgoritmoA extends Algoritmo
         while(continuar)
         {
             limpiarConsola();
-            imprimirConsola("Iniciando solución con algoritmo de Generación y Prueba");
-            for(int x = 0; x < Algoritmo.iteraciones ; x++)
+            imprimirConsola("Iniciando solución con algoritmo A* ");
+            Nodo solucion = explorar(Raiz);
+            if(solucion.getPuntuacion()<=puzzleia.PuzzleIA.ventana.getPresicion())
             {
-                Nodo solucion = explorar(Raiz);
-                boolean flag = true;
-                /*Verificamos que la solución no haya sido ya almacenada.*/
-                for(Nodo nodo: soluciones)
-                {
-                    if(nodo.getRutaSolucion().equals(solucion.getRutaSolucion()))
-                    {
-                        if(!soluciones.isEmpty())
-                        {
-                            flag = false;
-                            break;                        
-                        }
-                    }
-                }
-                //Si la solución no es igual a otra que ya está almacenada, se almacena.
-                //Si es igual, se descarga.
-                if(flag)
-                {
-                    //Verificamos que tenga la presición deseada. 0 = Solución total
-                    if(solucion.getPuntuacion()<=puzzleia.PuzzleIA.ventana.getPresicion())
-                    {
-                        soluciones.add(solucion);
-                    }                
-                }
-            }
-            
+                soluciones.add(solucion);
+            }             
+           
             finEjecucion = System.currentTimeMillis();
             imprimirConsola("Se han encontrado " + soluciones.size() +" soluciones.");     
             imprimirConsola("Tiempo utiliado: "+(double) ((finEjecucion - inicioEjecucion)/1000) +" segundos.");
@@ -105,8 +83,11 @@ public class AlgoritmoA extends Algoritmo
             for(Nodo nodo: soluciones)
             {
                 int costo = nodo.getCosto();
-                imprimirConsola(indiceTmp+")\tCosto: "+costo);
-                imprimirConsola("\t"+nodo.getRutaSolucion());
+                if(puzzleia.PuzzleIA.ventana.mostrarTodasLasSoluciones())
+                {
+                    imprimirConsola(indiceTmp+")\tCosto: "+costo);
+                    imprimirConsola("\t"+nodo.getRutaSolucion());                    
+                }
                 indiceTmp++;
                 if(costo <= costeMenor)
                 {
@@ -126,8 +107,8 @@ public class AlgoritmoA extends Algoritmo
                 }
                 posicionSolucion++;
             }
-            imprimirConsola("\n\nLa mejor solución es la opción número : \t" + posicionSolucion+1 + " Con un coste total de "+costeMenor +" pasos.");
-
+            imprimirConsola("\n\nLa mejor solución es la número : \t" + (posicionSolucion+1) + " Con un coste total de "+costeMenor +" pasos.");
+            imprimirConsola("\n"+tmp.getRutaSolucion()+"\n");
             if(puzzleia.PuzzleIA.ventana.mostrarRuta())
             {
                 String rutaTablero = "";
@@ -145,384 +126,143 @@ public class AlgoritmoA extends Algoritmo
         
     }
     
+   
     
     public Nodo explorar(Nodo raiz)
-    {     
-      
-        
+    {                   
         LinkedList<Nodo> listaAbiertos = new LinkedList<>();
-        LinkedList<Nodo> listaCerrados = new LinkedList<>();
-        listaAbiertos.add(raiz); // Agreagamos la raiz a la lista de nodos abiertos.
+        LinkedList<Nodo> listaCerrados = new LinkedList<>();  
+        
+        /*Agreagamos la raiz a la lista de nodos abiertos.*/
+        /*1.*/
+        listaAbiertos.add(raiz);  
+        
+        
         Nodo mejorNodo = null;
-        double tmpMejorF = 10000000;
-        for(Nodo tmpNodo :listaAbiertos)
+        int posicion = 0;
+        double tmpMejorF = 10000000;        
+        
+        while(true)
         {
-            double tmpF = tmpNodo.getCosto() + tmpNodo.getPuntuacion();
-            if(tmpMejorF> tmpF)
+            tmpMejorF = 10000000;
+            posicion = 0;               
+            /*2. */
+            if(listaAbiertos.isEmpty())
             {
-                mejorNodo = tmpNodo;
-            }
-        }
-        if(mejorNodo==null){return raiz;} // Error
-        
-        /*Verificamos si mejorNodo es nodo meta o si ya ha sobrepasado el coste permitido*/
-        double puntuacion = mejorNodo.getPuntuacion();        
-        int costo = mejorNodo.getCosto();
-        if( puntuacion <= puzzleia.PuzzleIA.ventana.getPresicion() ||  costo >= puzzleia.PuzzleIA.ventana.getCostoMaximo())
-        {
-            return mejorNodo;
-        }  
-
-        
-        /*Expandimos el mejorNodo------------------------------------------------------------------------------->*/        
-        /*Localizamos los ceros*/
-        LinkedList<Cero> listaCeros = new LinkedList<>();
-        
-        for(int y = 0; y < Tablero.tamMatrix; y++)
-        {
-            for(int x = 0; x < Tablero.tamMatrix; x++)
-            {
-                if(raiz.tablero.obtenerValor(y, x) == 0)
+                return raiz; // Error                
+            }                                                            
+            
+            /*Buscamos el mejor nodo*/         
+            for(Nodo tmpNodo :listaAbiertos)
+            {                
+                //double tmp = tmpNodo.f();
+                double tmp = tmpNodo.getPuntuacion();
+                if(tmpMejorF > tmp )
                 {
-                    listaCeros.add(new Cero(x,y));
+                    tmpMejorF = tmp;
+                }                
+            }    
+
+            
+            LinkedList<Nodo> mejoresNodos = new LinkedList<>();
+            /*Ahora obtenemos los mejores*/
+            for(Nodo tmpNodo: listaAbiertos)
+            {
+                if(tmpMejorF==tmpNodo.getPuntuacion())
+                {
+                    mejoresNodos.add(tmpNodo);
                 }
             }
-        }
-        if(listaCeros.isEmpty()){return raiz;}        
-        /*----------> Ya tenemos localizados los ceros.*/        
-        /*Ahora procedemos a verificar los movimientos posibles desde cada cero.*/
-        
-        // Creamos la estructura para almacenar los posibles movimientos.
-        LinkedList<Nodo> posiblesMovimientos = new LinkedList<>();
-        for(Cero cero : listaCeros)
-        {
-            aplicarOperadores(posiblesMovimientos, cero, raiz);
-        }            
-        
-        if(posiblesMovimientos.isEmpty()){return mejorNodo;}
-        
-        /*Buscamos el mejor f(n) = g(n) + h'(n)*/
-        double minimo = 10000000;            
-        for(Nodo n: posiblesMovimientos)
-        {
-            double tmp = n.getPuntuacion() + n.getCosto();
-            if(tmp < minimo)
-            {
-                minimo = tmp;
-            }
-        }
-                        
-        LinkedList<Nodo> nodosAbiertos = new LinkedList<>();
-        for(Nodo n:posiblesMovimientos)
-        {
-            double tmp = n.getPuntuacion() + n.getCosto();
-            if(tmp==minimo)
-            {
-                nodosAbiertos.add(n);
-            }            
-        }
-        
-        
-        /*Vemos los hijos*/
-        
-        if(nodosAbiertos.isEmpty())
-        {   
-            return raiz;
-        }
-        
-        
-        for(Nodo nodo : nodosAbiertos)
-        {
-            
-        }
-        
-        
-        /*Verificamos*/
-        if(nodosAbiertos.size()==1)
-        {
-            Nodo nuevo = explorar(nodosAbiertos.get(0));
-            return nuevo;
-        }
-        else
-        {
-            /*Elegimos aleatoriamente el tablero al cual moverse*/
-            Nodo nuevo = null;
+                      
+            /*Elegimos aleatoriamente el mejor nodo*/
             Random r = new Random();
-            int indice = r.nextInt(nodosAbiertos.size());
+            int indice = r.nextInt(mejoresNodos.size());
             if(indice<0){indice = indice*-1;}
-            nuevo = explorar(nodosAbiertos.get(indice));
-            return nuevo;
-        }                                                         
+            mejorNodo = mejoresNodos.get(indice);            
+
+            if(mejorNodo==null){return raiz;} // Error
+            /*3.
+            **Quitamos el mejor nodo de abiertos y lo pasamos a cerrados
+            */
+            //listaCerrados.add(mejorNodo);
+            listaAbiertos.remove(mejorNodo);                                    
+
+            /*4.
+            **Si mejor nodo es meta, indicar que es la solución
+            **/
+            if(mejorNodo.getPuntuacion() <= puzzleia.PuzzleIA.ventana.getPresicion())               
+            {
+                return mejorNodo;
+            }
+
+            if(mejorNodo.getCosto() >= puzzleia.PuzzleIA.ventana.getCostoMaximo())
+            {
+                return mejorNodo;
+            }
+            //System.out.println("Costo \t"+mejorNodo.getPuntuacion() +"\tAbiertos:  " + listaAbiertos.size() +"\tCerrados "+listaCerrados.size() +" Prof :"+mejorNodo.getCosto());
+            /*5.
+            **Expandimos el mejorNodo
+            */
+            LinkedList<Nodo> sucesoresMejorNodo = new LinkedList<>();
+            LinkedList<Cero> listaCeros = mejorNodo.buscarCeros();
+            for(Cero cero : listaCeros)
+            {
+                Nodo.aplicarOperadores(sucesoresMejorNodo, cero, mejorNodo);
+            } 
+
+            /*Si no tiene sucesores Regresamos a paso 2*/
+            if(sucesoresMejorNodo.isEmpty()){continue;} 
+
+            /*6*/            
+            for(Nodo sucesor: sucesoresMejorNodo)
+            {                                           
+                //if(sucesor.getPuntuacion() <=  mejorNodo.getPuntuacion())
+                {                
+                    /*Si sucesor existe en nodos abiertos.*/
+                    boolean estaEnAbierto = false;
+                    boolean estaEnCerrado = false;
+                    Nodo nodoViejo  = null;
+                    for(Nodo nodoAbierto: listaAbiertos)
+                    {
+                        if(nodoAbierto.tablero.esIgual(sucesor.tablero))
+                        {
+                            estaEnAbierto = true;
+                            nodoViejo = nodoAbierto;
+                            if(nodoViejo.getCosto() > sucesor.getCosto())
+                            {
+                                nodoViejo.ptr_padre = mejorNodo;
+                                nodoViejo.f();                        
+                            }                                                                
+                        }
+                    }
+                    /*Ahora lo buscamos en cerrados*/
+                    if(!estaEnAbierto)                                               
+                    {
+                        for(Nodo nodoCerrado: listaCerrados)
+                        {
+                            if(nodoCerrado.tablero.esIgual(sucesor.tablero))
+                            {
+                                estaEnCerrado = true;
+                                nodoViejo = nodoCerrado;
+                                if(nodoViejo.getCosto() > sucesor.getCosto())
+                                {
+                                    nodoViejo.ptr_padre = mejorNodo;
+                                    nodoViejo.setCosto(sucesor.getCosto());
+                                }
+                                break;
+                            }
+                        }
+                        if(!estaEnAbierto)        
+                        {                       
+                            listaAbiertos.add(sucesor);
+                        }
+                    }               
+                }
+            }                 
+           /* } */          
+        }
     }
     
-    /*
-      En este caso tenemos cuatro operadores.
-        -Movimiento al Norte
-        -Movimiento al Sur
-        -Movimiento al Oeste
-        -Movimiento al Este    
-    */    
-    
-    public void aplicarOperadores(LinkedList<Nodo> lista, Cero cero, Nodo raiz)
-    {                
-        int tmpValor = 0;        
-        /*Operador 1 : Movimientos a la izquierda*/
-        if(cero.x -1 >= 0)
-        {                  
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y, cero.x-1);
-            if(tmpValor!=0)
-            {
-                nuevoTab.setValor(cero.y, cero.x -1, 0);
-                nuevoTab.setValor(cero.y, cero.x, tmpValor);              
-                Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"E");
-                Nodo auxiliar = raiz;
-                boolean flag = true;
-                if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                {
-                    while(auxiliar!=null)
-                    {
-                        if(auxiliar.tablero.esIgual(nuevoTab))
-                        {
-                            flag = false;
-                            break;
-                        }
-                        auxiliar = auxiliar.ptr_padre;
-                    }                
-                }
-                if(flag)
-                {
-                    lista.add(nuevo);
-                }                
-            }          
-        }
-        /*Operador 2: Movimiento a la derecha. */
-        if(cero.x + 1 <= Tablero.tamMatrix-1)
-        {        
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y, cero.x+1);
-            if(tmpValor!=0)
-            {
-                nuevoTab.setValor(cero.y, cero.x + 1, 0);
-                nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-                Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"O");
-                Nodo auxiliar = raiz;
-                boolean flag = true;
-                if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                {
-                    while(auxiliar!=null)
-                    {
-                        if(auxiliar.tablero.esIgual(nuevoTab))
-                        {
-                            flag = false;
-                            break;
-                        }
-                        auxiliar = auxiliar.ptr_padre;
-                    }                
-                }
-                if(flag)
-                {
-                    lista.add(nuevo);
-                }                 
-            }        
-        }
-        /* Operador 3: Movimiento hacia arriba*/
-        if(cero.y - 1 >= 0)
-        {            
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y-1, cero.x);
-            if(tmpValor!=0)
-            {
-                nuevoTab.setValor(cero.y - 1, cero.x, 0);
-                nuevoTab.setValor(cero.y, cero.x, tmpValor);  
-
-                Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"S");
-                Nodo auxiliar = raiz;
-                boolean flag = true;
-                if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                {
-                    while(auxiliar!=null)
-                    {
-                        if(auxiliar.tablero.esIgual(nuevoTab))
-                        {
-                            flag = false;
-                            break;
-                        }
-                        auxiliar = auxiliar.ptr_padre;
-                    }                
-                }
-                if(flag)
-                {
-                    lista.add(nuevo);
-                }                 
-            }           
-        }
-        /* Operador 4: Movimiento hacia Arriba*/
-        if(cero.y + 1 <= Tablero.tamMatrix -1 )
-        {       
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y+1, cero.x);
-            if(tmpValor!=0)
-            {
-                nuevoTab.setValor(cero.y + 1, cero.x, 0);
-                nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-                Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"N");
-                Nodo auxiliar = raiz;
-                boolean flag = true;
-                if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                {
-                    while(auxiliar!=null)
-                    {
-                        if(auxiliar.tablero.esIgual(nuevoTab))
-                        {
-                            flag = false;
-                            break;
-                        }
-                        auxiliar = auxiliar.ptr_padre;
-                    }                
-                }
-                if(flag)
-                {
-                    lista.add(nuevo);
-                }                
-            }            
-        }
-        
-        /*Movimentos diagonales*/
-        if(puzzleia.PuzzleIA.ventana.movimientosDiagonal())
-        {
-            /*Movimiento NorOeste */
-            if((cero.y + 1 <= Tablero.tamMatrix -1 )  && (cero.x + 1 <= Tablero.tamMatrix-1))
-            {
-                Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-                tmpValor = nuevoTab.getValor(cero.y+1, cero.x+1);
-                if(tmpValor!=0)
-                {
-                    nuevoTab.setValor(cero.y + 1, cero.x +1 , 0);
-                    nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-                    Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"N-O");
-                    Nodo auxiliar = raiz;
-                    boolean flag = true;
-                    if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                    {
-                        while(auxiliar!=null)
-                        {
-                            if(auxiliar.tablero.esIgual(nuevoTab))
-                            {
-                                flag = false;
-                                break;
-                            }
-                            auxiliar = auxiliar.ptr_padre;
-                        }                
-                    }
-                    if(flag)
-                    {
-                        lista.add(nuevo);
-                    }                
-                }                 
-            }
-            
-            /*Movimiento SurOeste*/
-            if((cero.y - 1 >= 0)  && (cero.x + 1 <= Tablero.tamMatrix-1))
-            {
-                Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-                tmpValor = nuevoTab.getValor(cero.y- 1, cero.x+1);
-                if(tmpValor!=0)
-                {
-                    nuevoTab.setValor(cero.y - 1, cero.x +1 , 0);
-                    nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-                    Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"S-O");
-                    Nodo auxiliar = raiz;
-                    boolean flag = true;
-                    if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                    {
-                        while(auxiliar!=null)
-                        {
-                            if(auxiliar.tablero.esIgual(nuevoTab))
-                            {
-                                flag = false;
-                                break;
-                            }
-                            auxiliar = auxiliar.ptr_padre;
-                        }                
-                    }
-                    if(flag)
-                    {
-                        lista.add(nuevo);
-                    }                
-                }                 
-            }  
-            
-            /*Movimiento NorEste */
-            if((cero.y + 1 <= Tablero.tamMatrix -1 )  && (cero.x -1 >= 0))
-            {
-                Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-                tmpValor = nuevoTab.getValor(cero.y+1, cero.x-1);
-                if(tmpValor!=0)
-                {
-                    nuevoTab.setValor(cero.y + 1, cero.x -1 , 0);
-                    nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-                    Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"N-E");
-                    Nodo auxiliar = raiz;
-                    boolean flag = true;
-                    if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                    {
-                        while(auxiliar!=null)
-                        {
-                            if(auxiliar.tablero.esIgual(nuevoTab))
-                            {
-                                flag = false;
-                                break;
-                            }
-                            auxiliar = auxiliar.ptr_padre;
-                        }                
-                    }
-                    if(flag)
-                    {
-                        lista.add(nuevo);
-                    }                
-                }                 
-            }
-            
-            /*Movimiento SurEste*/
-            if((cero.y - 1 >= 0)  && (cero.x -1 >= 0))
-            {
-                Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-                tmpValor = nuevoTab.getValor(cero.y-1, cero.x-1);
-                if(tmpValor!=0)
-                {
-                    nuevoTab.setValor(cero.y - 1, cero.x -1 , 0);
-                    nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-                    Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"S-E");
-                    Nodo auxiliar = raiz;
-                    boolean flag = true;
-                    if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-                    {
-                        while(auxiliar!=null)
-                        {
-                            if(auxiliar.tablero.esIgual(nuevoTab))
-                            {
-                                flag = false;
-                                break;
-                            }
-                            auxiliar = auxiliar.ptr_padre;
-                        }                
-                    }
-                    if(flag)
-                    {
-                        lista.add(nuevo);
-                    }                
-                }                
-            }                                      
-        }        
-                   
-    }
     
     public void imprimirConsola(Object s)
     {
