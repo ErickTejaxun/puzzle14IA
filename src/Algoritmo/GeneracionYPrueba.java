@@ -44,13 +44,21 @@ public class GeneracionYPrueba extends Algoritmo
     {                
         LinkedList<Nodo> soluciones = new LinkedList<>();
         boolean continuar= true;
+        long inicioEjecucion = System.currentTimeMillis();
+        long finEjecucion = System.currentTimeMillis();
         while(continuar)
         {
             limpiarConsola();
             imprimirConsola("Iniciando solución con algoritmo de Generación y Prueba");
-            for(int x = 0; x < 200 ; x++)
+            for(int x = 0; x < Algoritmo.iteraciones*10 ; x++)
             {
                 Nodo solucion = explorar(Raiz);
+                if(solucion.getPuntuacion()<=puzzleia.PuzzleIA.ventana.getPresicion())
+                {
+                    soluciones.add(solucion);
+                    break;
+                }
+                
                 boolean flag = true;
                 /*Verificamos que la solución no haya sido ya almacenada.*/
                 for(Nodo nodo: soluciones)
@@ -72,13 +80,18 @@ public class GeneracionYPrueba extends Algoritmo
                     if(solucion.getPuntuacion()<=puzzleia.PuzzleIA.ventana.getPresicion())
                     {
                         soluciones.add(solucion);
+                        if(solucion.getCosto()>2000)
+                        {
+                            break; /*Si el costo es demasiado alto, con que encontremos una solución se acabó la ejecución.*/
+                        }                        
                     }                
                 }
             }
             
-            
+            finEjecucion = System.currentTimeMillis();
             imprimirConsola("Se han encontrado " + soluciones.size() +" soluciones.");            
-            
+            imprimirConsola("Tiempo utiliado: "+(double) ((finEjecucion - inicioEjecucion)/1000) +" segundos.");
+            imprimirConsola("Se han generado "+ Tablero.numeroNodosCreados + " nodos");
             /*Si no hemos encontrado solución, preguntamos al usuario
             si quiere volver a lanzar otra iteración de búsqueda.*/
             if(soluciones.isEmpty())
@@ -106,8 +119,11 @@ public class GeneracionYPrueba extends Algoritmo
             for(Nodo nodo: soluciones)
             {
                 int costo = nodo.getCosto();
-                imprimirConsola(indiceTmp+")\tCosto: "+costo);
-                imprimirConsola("\t"+nodo.getRutaSolucion());
+                if(puzzleia.PuzzleIA.ventana.mostrarTodasLasSoluciones())
+                {
+                    imprimirConsola(indiceTmp+")\tCosto: "+costo);
+                    imprimirConsola("\t"+nodo.getRutaSolucion());                    
+                }
                 indiceTmp++;
                 if(costo <= costeMenor)
                 {
@@ -127,7 +143,8 @@ public class GeneracionYPrueba extends Algoritmo
                 }
                 posicionSolucion++;
             }
-            imprimirConsola("\n\nLa mejor solución es la opción número : \t" + posicionSolucion+1 + " Con un coste total de "+costeMenor +" pasos.");
+            imprimirConsola("\n\nLa mejor solución es la opción número : \t" +(posicionSolucion+1)+ " Con un coste total de "+costeMenor +" pasos.");
+            imprimirConsola("\n"+tmp.getRutaSolucion()+"\n");
 
             if(puzzleia.PuzzleIA.ventana.mostrarRuta())
             {
@@ -160,174 +177,47 @@ public class GeneracionYPrueba extends Algoritmo
         
         LinkedList<Nodo> lista = new LinkedList<>();// Creamos la estructura para almacenar los posibles movimientos.
         /*Localizamos los ceros*/
-        Cero cero1 =null, cero2 = null;
+        LinkedList<Cero> listaCeros = new LinkedList<>();
         for(int y = 0; y < Tablero.tamMatrix; y++)
         {
             for(int x = 0; x < Tablero.tamMatrix; x++)
             {
                 if(raiz.tablero.obtenerValor(y, x) == 0)
                 {
-                    if(cero1==null)
-                    {
-                        cero1 = new Cero(x,y);
-                    }
-                    else
-                    {
-                        cero2 = new Cero(x,y);
-                        break;
-                    }
+                    listaCeros.add(new Cero(x,y));
                 }
             }
         }
-        if(cero1==null || cero2==null){return raiz;}
+        if(listaCeros.isEmpty()){return raiz;}
         //imprimirConsola(cero1.mensajePosicion());
         //imprimirConsola(cero2.mensajePosicion());
         /*----------> Ya tenemos localizados los ceros.*/        
         /*Ahora procedemos a verificar los movimientos posibles desde cada cero.*/
         
-        aplicarOperadores(lista, cero1, raiz);
-        aplicarOperadores(lista, cero2, raiz);
-      
-      
+        for(Cero cero : listaCeros)
+        {
+            Nodo.aplicarOperadores(lista, cero, raiz);
+        }                
+             
         if(lista.isEmpty())
         {   
             return raiz;
         }
         else
-        {
+        {       
             /*Elegimos aleatoriamente el tablero al cual moverse*/
             Random r = new Random();
             int indice = r.nextInt(lista.size());
-            if(indice<0){indice = indice*-1;}            
-            return explorar(lista.get(indice));
+            if(indice<0){indice = indice*-1;}   
+            Nodo sucesor = lista.get(indice);                          
+            return explorar(sucesor);
+//            if(sucesor.getPuntuacion()<= raiz.getPuntuacion())
+//            {
+//                return explorar(sucesor);
+//            }                
+            //return explorar(raiz);
+            //return raiz;
         }                                                         
-    }
-    
-    /*
-      En este caso tenemos cuatro operadores.
-        -Movimiento al Norte
-        -Movimiento al Sur
-        -Movimiento al Oeste
-        -Movimiento al Este    
-    */    
-    
-    public void aplicarOperadores(LinkedList<Nodo> lista, Cero cero, Nodo raiz)
-    {                
-        int tmpValor = 0;        
-        /*Operador 1 : Movimientos a la izquierda*/
-        if(cero.x -1 >= 0)
-        {                  
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y, cero.x-1);
-            nuevoTab.setValor(cero.y, cero.x -1, 0);
-            nuevoTab.setValor(cero.y, cero.x, tmpValor);  
-            
-            Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"E");
-            Nodo auxiliar = raiz;
-            boolean flag = true;
-            if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-            {
-                while(auxiliar!=null)
-                {
-                    if(auxiliar.tablero.esIgual(nuevoTab))
-                    {
-                        flag = false;
-                        break;
-                    }
-                    auxiliar = auxiliar.ptr_padre;
-                }                
-            }
-            if(flag)
-            {
-                lista.add(nuevo);
-            }
-           
-        }
-        /*Operador 2: Movimiento a la derecha. */
-        if(cero.x + 1 <= Tablero.tamMatrix-1)
-        {        
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y, cero.x+1);
-            nuevoTab.setValor(cero.y, cero.x + 1, 0);
-            nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-            
-            Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"O");
-            Nodo auxiliar = raiz;
-            boolean flag = true;
-            if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-            {
-                while(auxiliar!=null)
-                {
-                    if(auxiliar.tablero.esIgual(nuevoTab))
-                    {
-                        flag = false;
-                        break;
-                    }
-                    auxiliar = auxiliar.ptr_padre;
-                }                
-            }
-            if(flag)
-            {
-                lista.add(nuevo);
-            }         
-        }
-        /* Operador 3: Movimiento hacia arriba*/
-        if(cero.y - 1 >= 0)
-        {            
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y-1, cero.x);
-            nuevoTab.setValor(cero.y - 1, cero.x, 0);
-            nuevoTab.setValor(cero.y, cero.x, tmpValor);  
-
-            Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"S");
-            Nodo auxiliar = raiz;
-            boolean flag = true;
-            if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-            {
-                while(auxiliar!=null)
-                {
-                    if(auxiliar.tablero.esIgual(nuevoTab))
-                    {
-                        flag = false;
-                        break;
-                    }
-                    auxiliar = auxiliar.ptr_padre;
-                }                
-            }
-            if(flag)
-            {
-                lista.add(nuevo);
-            }            
-        }
-        /* Operador 4: Movimiento hacia Arriba*/
-        if(cero.y + 1 <= Tablero.tamMatrix -1 )
-        {       
-            Tablero nuevoTab = new Tablero(raiz.tablero.getData());
-            tmpValor = nuevoTab.getValor(cero.y+1, cero.x);
-            nuevoTab.setValor(cero.y + 1, cero.x, 0);
-            nuevoTab.setValor(cero.y, cero.x, tmpValor); 
-
-            Nodo nuevo = new Nodo(nuevoTab,raiz,tmpValor+"N");
-            Nodo auxiliar = raiz;
-            boolean flag = true;
-            if(puzzleia.PuzzleIA.ventana.verificarEstadosRepetidos())
-            {
-                while(auxiliar!=null)
-                {
-                    if(auxiliar.tablero.esIgual(nuevoTab))
-                    {
-                        flag = false;
-                        break;
-                    }
-                    auxiliar = auxiliar.ptr_padre;
-                }                
-            }
-            if(flag)
-            {
-                lista.add(nuevo);
-            }            
-        }
-                   
     }
     
     public void imprimirConsola(Object s)
